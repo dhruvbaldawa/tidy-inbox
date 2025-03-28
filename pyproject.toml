@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tidy-inbox"
+version = "0.1.0"
+description = "Generates Gmail filter queries and search links for newsletters based on unread emails."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"} # Feel free to change this license
+# Add your name and email if desired
+# authors = [
+#   {name="Your Name", email="you@example.com"},
+# ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License", # Adjust if you changed the license above
+    "Operating System :: OS Independent",
+    "Topic :: Communications :: Email :: Filters",
+    "Environment :: Console",
+]
+
+dependencies = [
+    "google-api-python-client>=2.0.0",
+    "google-auth-httplib2>=0.1.0",
+    "google-auth-oauthlib>=0.7.0",
+    "python-dateutil>=2.8.0",  # Added for date parsing
+    "rich>=13.0.0"             # Added for rich output
+]
+
+# This allows installing the script as a command-line tool
+[project.scripts]
+tidy-inbox = "tidy_inbox:main"
