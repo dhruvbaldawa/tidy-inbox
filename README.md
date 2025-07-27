@@ -14,7 +14,7 @@ This script helps you identify potential newsletters in your Gmail inbox based o
 
 ## Setup
 
-1.  **Clone or Download:** Get the script files (`generate_filters.py`, `pyproject.toml`, `README.md`).
+1.  **Clone or Download:** Get the script files (`tidy_inbox.py`, `pyproject.toml`, `README.md`).
 2.  **Enable Gmail API:**
     *   Go to the [Google Cloud Console](https://console.cloud.google.com/).
     *   Create a new project or select an existing one.
@@ -28,32 +28,27 @@ This script helps you identify potential newsletters in your Gmail inbox based o
     *   Give it a name (e.g., "Gmail Filter Script").
     *   Click "Create".
     *   Click "DOWNLOAD JSON" to download the credentials file.
-    *   **IMPORTANT:** Rename the downloaded file to `credentials.json` and place it in the **same directory** as the `generate_filters.py` script. **Do not share this file.**
+    *   **IMPORTANT:** Rename the downloaded file to `credentials.json` and place it in the **same directory** as the `tidy_inbox.py` script. **Do not share this file.**
 4.  **Install Dependencies using `uv`:**
     *   Make sure you have `uv` installed. If not, follow the installation instructions at [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv).
     *   Open your terminal or command prompt.
     *   Navigate to the directory containing the project files (`pyproject.toml`).
-    *   Create and activate a virtual environment using `uv`:
+    *   Install the required dependencies:
         ```bash
-        uv venv
-        source .venv/bin/activate  # On Windows use `.venv\Scripts\activate`
-        ```
-    *   Install the required libraries and the script itself in editable mode:
-        ```bash
-        uv pip install -e .
+        uv sync
         ```
 
 ## Usage
 
 1.  **Run the Script:**
-    *   Make sure you are in the script's directory in your terminal (and the virtual environment created with `uv` is active).
-    *   Run the script using `python generate_filters.py` (or `generate-gmail-filters` if you installed it globally or the `.venv/bin` is in your PATH).
+    *   Make sure you are in the script's directory in your terminal.
+    *   Run the script using `uv run tidy-inbox`.
 
 2.  **First Run - Authorization:**
     *   The script will open a new tab or window in your web browser asking you to log in to your Google Account and grant permission for the script to access your Gmail (read-only access).
     *   Review the permissions and click "Allow".
     *   If successful, the browser might show a "Authentication successful" message, and you can close the tab.
-    *   The script will create a `token.json` file in the same directory to store your authorization credentials for future runs. **Do not share this file.**
+    *   The script will create a `token.pickle` file in the same directory to store your authorization credentials for future runs. **Do not share this file.**
 
 3.  **Script Output:**
     *   The script will fetch emails, group them, sort them, and then print the top senders/newsletters based on your chosen criteria.
@@ -81,27 +76,27 @@ This script helps you identify potential newsletters in your Gmail inbox based o
 You can customize the script's behavior using command-line arguments:
 
 *   `-q` or `--query`: Specify a custom Gmail search query to find emails.
-    *   Example: `python generate_filters.py -q "is:unread category:promotions"`
+    *   Example: `uv run tidy-inbox -q "is:unread category:promotions"`
     *   Default: `is:unread`
 *   `-s` or `--sort`: Choose the sorting criteria.
     *   `count`: Sort by the number of unread emails (descending).
     *   `date`: Sort by the date of the most recent email (descending).
     *   Default: `count`
 *   `-n` or `--num-results`: Set the maximum number of top newsletters to display.
-    *   Example: `python generate_filters.py -n 10`
+    *   Example: `uv run tidy-inbox -n 10`
     *   Default: `20`
 *   `--max-fetch`: Set the maximum number of emails to fetch from Gmail for analysis. Increasing this might find more newsletters but takes longer and uses more API quota.
-    *   Example: `python generate_filters.py --max-fetch 1000`
+    *   Example: `uv run tidy-inbox --max-fetch 1000`
     *   Default: `500`
 
 ## Security and Privacy
 
 -   The script requests **read-only** access to your Gmail (`gmail.readonly` scope). It cannot send emails, delete emails, or modify your account settings (other than creating the `token.json` file locally).
--   Your credentials (`credentials.json`) and authorization token (`token.json`) are stored locally on your computer. **Keep these files secure and do not share them.** If `token.json` is compromised, someone could potentially read your emails using it until it expires or is revoked. You can revoke access anytime via your [Google Account security settings](https://myaccount.google.com/permissions).
+-   Your credentials (`credentials.json`) and authorization token (`token.pickle`) are stored locally on your computer. **Keep these files secure and do not share them.** If `token.pickle` is compromised, someone could potentially read your emails using it until it expires or is revoked. You can revoke access anytime via your [Google Account security settings](https://myaccount.google.com/permissions).
 
 ## Troubleshooting
 
 -   **`credentials.json not found`**: Make sure you downloaded the OAuth 2.0 credentials JSON file, renamed it exactly to `credentials.json`, and placed it in the same directory as the script.
--   **Authentication Errors:** Delete `token.json` and run the script again to re-authenticate. Ensure the Gmail API is enabled in your Google Cloud project. Check if the credentials in `credentials.json` are for a "Desktop app".
+-   **Authentication Errors:** Delete `token.pickle` and run the script again to re-authenticate. Ensure the Gmail API is enabled in your Google Cloud project. Check if the credentials in `credentials.json` are for a "Desktop app".
 -   **Date Parsing Errors:** The script tries to handle common date formats but might fail on unusual ones. It will print a warning and skip date comparison for affected senders.
 -   **Incorrect Grouping:** Sender identification relies on the 'From' header and email address extraction. Complex 'From' headers might lead to imperfect grouping.
